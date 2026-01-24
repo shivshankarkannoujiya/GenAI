@@ -1,0 +1,80 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# =========================
+# Virtual Environment
+# =========================
+env/
+venv/
+.venv/
+ENV/
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Jupyter / GenAI Notebooks
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Model / GenAI Artifacts
+# =========================
+models/
+checkpoints/
+embeddings/
+vectorstore/
+faiss_index/
+chroma/
+*.bin
+*.pt
+*.onnx
+
+# =========================
+# Cache / Logs
+# =========================
+.cache/
+logs/
+*.log
+
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# PyCharm
+.idea/
+
+# =========================
+# Testing / Coverage
+# =========================
+.pytest_cache/
+.coverage
+htmlcov/
+
+# =========================
+# Temporary files
+# =========================
+*.tmp
+*.swp
+*.bak
