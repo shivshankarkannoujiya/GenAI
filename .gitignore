@@ -34,7 +34,6 @@ ENV/
 # =========================
 # Model / GenAI Artifacts
 # =========================
-models/
 checkpoints/
 embeddings/
 vectorstore/
