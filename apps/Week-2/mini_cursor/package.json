@@ -1,0 +1,13 @@
+{
+  "name": "mini_cursor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "author": "Shivshankar",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "openai": "^6.17.0",
+    "readline-sync": "^1.4.10"
+  }
+}
