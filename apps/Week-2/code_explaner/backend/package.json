@@ -1,0 +1,19 @@
+{
+  "name": "code_explaner",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "author": "shivshankar",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.4",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "openai": "^6.18.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.1"
+  }
+}
