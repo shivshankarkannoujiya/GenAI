@@ -1,7 +1,9 @@
 import OpenAI from 'openai';
+import { ENV } from '../config/env.js';
+
 
 const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: ENV.OPENAI_API_KEY,
 });
 
 const SYSTEM_PROMPT = `

@@ -1,11 +1,10 @@
 import app from "./app.js";
-import dotenv from "dotenv"
+import { ENV } from "./config/env.js";
 
-dotenv.config({
-    path:"./.env"
-})
 
-const PORT = process.env.PORT ?? 8000
+
+
+const PORT = ENV.PORT ?? 8000
 
 app.listen(PORT, () => {
     console.log(`Serving at http://localhost:${PORT}`)
