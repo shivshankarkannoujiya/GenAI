@@ -7,19 +7,32 @@ const embedder = new OpenAIEmbeddings({
     apiKey: ENV.OPENAI_API_KEY,
 });
 
+const COLLECTION_NAME = 'rag-multi-query-test';
+
 let vectorStoreInstance = null;
 
 const getVectorStore = async () => {
     if (!vectorStoreInstance) {
-        await QdrantVectorStore.fromExistingCollection(embedder, {
-            url: ENV.QDRANT_URL,
-            collectionName: 'pdf-docs',
-        });
+        vectorStoreInstance = await QdrantVectorStore.fromExistingCollection(
+            embedder,
+            {
+                url: ENV.QDRANT_URL,
+                collectionName: COLLECTION_NAME,
+            }
+        );
+        console.log('[Retriever] Connected to Qdrant successfully');
     }
     return vectorStoreInstance;
 };
 
-/*TODO: Retrieves top-k documents for a single query*/
+function generateDocId(doc) {
+    if (doc.metadata?.['_id']) return String(doc.metadata['_id']);
+    if (doc.metadata?.source && doc.metadata?.loc) {
+        return `${doc.metadata.source}-${JSON.stringify(doc.metadata.loc)}-${doc.pageContent.slice(0, 20)}`;
+    }
+    return doc.pageContent.slice(0, 80).replace(/\s+/g, ' ');
+}
+
 const retrieveForQuery = async (query, topK = 3) => {
     const vectorStore = await getVectorStore();
     const result = await vectorStore.similaritySearchWithScore(query, topK);
@@ -33,32 +46,28 @@ const retrieveForQuery = async (query, topK = 3) => {
     }));
 };
 
-/* TODO: Retrieves documents for ALL queries in parallel */
 export const retrieveAll = async (queries, topK = 3) => {
     console.log(
         `\n[Retriever] Searching Qdrant for ${queries.length} queries in parallel...`
     );
 
-    const results = await Promise.all(
+    await getVectorStore();
+
+    const settled = await Promise.allSettled(
         queries.map((query) => retrieveForQuery(query, topK))
     );
 
-    results.reduce((sum, r) => sum + r.length, 0);
+    const results = settled.map((result, i) => {
+        if (result.status === 'fulfilled') return result.value;
+        console.warn(
+            `[Retriever] Query failed: "${queries[i]}" —`,
+            result.reason.message
+        );
+        return [];
+    });
+
+    const totalDocs = results.reduce((sum, r) => sum + r.length, 0);
     console.log(`[Retriever] Retrieved ${totalDocs} docs (with duplicates)`);
 
     return results;
 };
-
-/*
-- Creates a stable ID for deduplication.
-- Uses Qdrant's point ID if available, otherwise hashes the content.
-*/
-
-function generateDocId() {
-    if (doc.metadata?.['_id']) return String(doc.metadata['_id']);
-    if (doc.metadata?.source && doc.metadata?.loc) {
-        return `${doc.metadata.source}-${JSON.stringify(doc.metadata.loc)}`;
-    }
-
-    return doc.pageContent.slice(0, 80).replace(/\s+/g, ' ');
-}
