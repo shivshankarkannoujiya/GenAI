@@ -9,7 +9,7 @@ if (!question) {
 }
 
 async function main() {
-    const result = await runRAGPipeline(question, 4, 3);
+    const result = await runRAGPipeline(question, 4, 5);
 
     console.log('\n' + '═'.repeat(60));
     console.log('FINAL ANSWER');

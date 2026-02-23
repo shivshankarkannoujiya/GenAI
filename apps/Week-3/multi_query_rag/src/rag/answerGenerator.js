@@ -26,22 +26,18 @@ export const generateAnswer = async (question, docs) => {
         )
         .join('\n\n---\n\n');
 
-    const SYSTEM_PROMPT = `
-    You are a helpful assistant that answers questions based strictly on the provided context.
-    
+    const SYSTEM_PROMPT = `You are a helpful assistant that answers questions based strictly on the provided context.
+
     Rules:
     - Answer ONLY from the context provided
-    - If the context does not contain enough information, say: "The provided documents do not contain enough information to answer this question."
+    - Synthesize information across ALL sources — do not rely on just one
+    - Structure your answer clearly: start with a definition, then features, then usage examples
+    - If the context does not contain enough information, say: "The provided documents do not contain enough information."
     - Be concise and accurate
-    - Do not hallucinate or add information not present in the context
-    
-    - Cite sources as [Source 1], [Source 2] etc. when referencing specific information`;
+    - Do not hallucinate
+    - Cite sources as [Source 1], [Source 2] throughout your answer`;
 
-    const USER_PROMPT = ` Context: ${context}
-
-    Question: ${question}
-    Answer: 
-    `;
+    const USER_PROMPT = `Context:\n${context}\n\nQuestion: ${question}`;
 
     console.log(
         `\n[AnswerGenerator] Generating answer using ${topDocs.length} context docs...`
@@ -49,7 +45,7 @@ export const generateAnswer = async (question, docs) => {
 
     try {
         const response = await AI.chat.completions.create({
-            model: 'gpt-4o-mini',
+            model: 'gpt-4o',
             messages: [
                 { role: 'system', content: SYSTEM_PROMPT },
                 { role: 'user', content: USER_PROMPT },

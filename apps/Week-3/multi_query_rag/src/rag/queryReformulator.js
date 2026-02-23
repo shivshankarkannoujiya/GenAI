@@ -14,20 +14,15 @@ export const generateQueries = async (question, n = 4) => {
         throw new Error('Question must be a non-empty string');
     }
 
-    const SYSTEM_PROMPT = `
-    You are an expert in query reformulation for document retrieval.
+    const SYSTEM_PROMPT = `You are an expert in query reformulation for document retrieval.
 
-    Given a question, generate ${n} alternative queries using these strategies.
-    1. Rephrase with different vocabulary.
-    2. Approach from different perspective.
-    3. Break into sub-question if the query is complex.
-    
-    Rules:
-    - Output only the querues, one per line.
-    - No numbring, no explanation, no "None".
-    - Do not repeat the same idea twice.
-    - Keep each query concise and focused
-    `;
+    Given a user question generate ${n} alternative queries, one per strategy:
+    1. A simple rephrase with different vocabulary
+    2. A technical deep-dive (implementation/internals focused)
+    3. A practical use-case question (how would someone use this?)
+    4. A specific sub-question (break down one concrete aspect)
+
+    Output only the queries, one per line, no numbering, no explanation, no "None".`;
 
     try {
         const response = await AI.chat.completions.create({
@@ -70,5 +65,3 @@ export const generateQueries = async (question, n = 4) => {
         return [question];
     }
 };
-
-
