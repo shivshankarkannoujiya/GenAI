@@ -29,35 +29,46 @@ const generateQueries = async (question, n = 4) => {
     - Keep each query concise and focused
     `;
 
-    const response = await AI.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-            { role: 'system', content: SYSTEM_PROMPT },
-            { role: 'user', content: question },
-        ],
-        temperature: 0.7,
-        max_completion_tokens: 300,
-    });
+    try {
+        const response = await AI.chat.completions.create({
+            model: 'gpt-4o-mini',
+            messages: [
+                { role: 'system', content: SYSTEM_PROMPT },
+                { role: 'user', content: question },
+            ],
+            temperature: 0.7,
+            max_completion_tokens: 300,
+        });
 
-    const raw = response.choices[0].message.content.trim();
+        const raw = response.choices[0].message.content.trim();
 
-    const alternativeQueries = raw
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(
-            (line) =>
-                line && line.toLocaleLowerCase() != 'none' && line.length > 5
+        const alternativeQueries = raw
+            .split('\n')
+            .map((line) => line.trim())
+            .filter(
+                (line) =>
+                    line &&
+                    line.toLocaleLowerCase() != 'none' &&
+                    line.length > 5
+            );
+
+        // debugging
+        const allQueries = [question, ...alternativeQueries];
+
+        console.log(
+            `\n[QueryReformulator] Generated ${allQueries.length} queries:`
+        );
+        allQueries.forEach((q, i) => console.log(`  ${i + 1}. ${q}`));
+
+        return allQueries;
+    } catch (error) {
+        console.error(
+            '[QueryReformulator] Failed to generate queries:',
+            error.message
         );
 
-    // debugging
-    const allQueries = [question, ...alternativeQueries];
-
-    console.log(
-        `\n[QueryReformulator] Generated ${allQueries.length} queries:`
-    );
-    allQueries.forEach((q, i) => console.log(`  ${i + 1}. ${q}`));
-
-    return allQueries;
+        return [question];
+    }
 };
 
 const reformulatedQueries = generateQueries('what is fs');
