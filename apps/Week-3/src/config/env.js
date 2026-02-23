@@ -16,5 +16,6 @@ if (!process.env.OPENAI_API_KEY) {
 export const ENV = {
     PORT: process.env.PORT,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    QDRANT_URL: process.env.QDRANT_URL,
 };
 
