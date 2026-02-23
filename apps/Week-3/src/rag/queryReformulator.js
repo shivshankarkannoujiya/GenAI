@@ -9,7 +9,7 @@ TODO:
  > Uses three strategies: paraphrase, perspective shift, decomposition.
  */
 
-const generateQueries = async (question, n = 4) => {
+export const generateQueries = async (question, n = 4) => {
     if (!question || typeof question != 'string') {
         throw new Error('Question must be a non-empty string');
     }
@@ -71,5 +71,4 @@ const generateQueries = async (question, n = 4) => {
     }
 };
 
-const reformulatedQueries = generateQueries('what is fs');
-console.log(reformulatedQueries);
+
