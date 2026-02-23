@@ -1,5 +1,5 @@
 import pdfWorker from './ingestion/worker.js';
-import { ingestPDF } from './ingestion/ingestor.js';
+import ingestPDF  from './ingestion/ingestor.js';
 
 const filePath = process.argv[2];
 const fileName = process.argv[3];
