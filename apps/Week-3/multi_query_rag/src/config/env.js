@@ -17,5 +17,10 @@ export const ENV = {
     PORT: process.env.PORT,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     QDRANT_URL: process.env.QDRANT_URL,
+    VALKEY_HOST: process.env.VALKEY_HOST,
+    VALKEY_PORT: process.env.VALKEY_PORT,
 };
+
+if (!ENV.OPENAI_API_KEY) throw new Error('Missing OPENAI_API_KEY');
+if (!ENV.QDRANT_URL) throw new Error('Missing QDRANT_URL');
 
