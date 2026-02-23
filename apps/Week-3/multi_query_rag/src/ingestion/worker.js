@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import valkey from '../config/valkey.config.js';
+import qdrantClient from '../config/qdrant.config.js';
 import { Worker } from 'bullmq';
 import { ENV } from '../config/env.js';
 import { OpenAIEmbeddings } from '@langchain/openai';
@@ -8,7 +9,7 @@ import { QdrantVectorStore } from '@langchain/qdrant';
 import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 
-const COLLECTION_NAME = 'pdf-docs';
+const COLLECTION_NAME = 'rag-multi-query-test';
 
 const embedder = new OpenAIEmbeddings({
     model: 'text-embedding-3-small',
@@ -28,7 +29,7 @@ const loadPDF = async (relativePath) => {
     }
 
     const loader = new PDFLoader(absolutePath);
-    const docs = loader.load();
+    const docs = await loader.load();
 
     console.log(`[Worker] Pages loaded: ${docs.length}`);
     return docs;
@@ -66,6 +67,24 @@ const enrichMetadata = (chunks, jobData) => {
 
 // Stores enriched chunks into Qdrant
 const storeInQdrant = async (chunks) => {
+
+    const response = await qdrantClient.getCollections();
+    const exists = response.collections.some((c) => c.name === COLLECTION_NAME);
+
+    if (!exists) {
+        await qdrantClient.createCollection(COLLECTION_NAME, {
+            vectors: {
+                size: 1536, // text-embedding-3-small dimension
+                distance: 'Cosine',
+            },
+        });
+        console.log(`[Worker] Collection '${COLLECTION_NAME}' created`);
+    } else {
+        console.log(
+            `[Worker] Collection '${COLLECTION_NAME}' already exists — skipping creation`
+        );
+    }
+
     const vectorStore = await QdrantVectorStore.fromExistingCollection(
         embedder,
         {
