@@ -5,6 +5,7 @@ from langgraph.checkpoint.mongodb import MongoDBSaver
 from graph import create_chat_graph
 
 load_dotenv()
+
 MONGODB_URI = os.getenv("MONGODB_URI")
 config = {"configurable": {"thread_id": "10"}}
 
