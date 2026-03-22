@@ -22,33 +22,40 @@ def main():
                 print("Adjusting for noise...")
                 r.adjust_for_ambient_noise(source, duration=1)
 
-                print("Say something!")
+                while True:
+                    print("Say something!")
 
-                try:
-                    audio = r.listen(source, timeout=5, phrase_time_limit=10)
-                except sr.WaitTimeoutError:
-                    print("You didn't start speaking in time")
-                    return
+                    try:
+                        audio = r.listen(source, timeout=5, phrase_time_limit=10)
+                    except sr.WaitTimeoutError:
+                        print("You didn't start speaking in time")
+                        continue
 
-                print("Processing audio...")
+                    print("Processing audio...")
 
-                try:
-                    sst = r.recognize_google(audio)
-                    print("You Said:", sst)
+                    try:
+                        sst = r.recognize_google(audio)
+                        print("You Said:", sst)
 
-                    for event in graph.stream(
-                        {"messages": [{"role": "user", "content": sst}]},
-                        config=config,
-                        stream_mode="values",
-                    ):
-                        if "messages" in event:
-                            event["messages"][-1].pretty_print()
+                        if sst.lower() in ["exit", "quit", "stop"]:
+                            print("Exiting...")
+                            break
 
-                except sr.UnknownValueError:
-                    print("Sorry, could not understand audio")
+                        for event in graph.stream(
+                            {"messages": [{"role": "user", "content": sst}]},
+                            config=config,
+                            stream_mode="values",
+                        ):
+                            if "messages" in event:
+                                event["messages"][-1].pretty_print()
 
-                except sr.RequestError as e:
-                    print(f"API error: {e}")
+                    except sr.UnknownValueError:
+                        print("Sorry, could not understand audio")
+                        continue
+
+                    except sr.RequestError as e:
+                        print(f"API error: {e}")
+                        break
 
         except OSError as e:
             print(f"Microphone not found or not working: {e}")
